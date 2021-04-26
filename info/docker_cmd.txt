@@ -1,0 +1,10 @@
+# To check all images and containers, active or inactive
+docker images -a; docker ps -a
+# To build the docker image of a project
+docker build -t <image_name> <path_to_dockerfile>
+# To run the container
+docker run <image_name>
+# ...with specific ports
+docker run -p <port_number:port_number> <image_name>
+# ...open STDIN of the container
+docker run -ti <image_name>

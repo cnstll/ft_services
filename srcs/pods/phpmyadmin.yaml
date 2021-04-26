@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin-dpl
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      containers:
+        - name: phpmyadmin
+          image: phpmyadmin:local
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PMA_HOST
+              value: mysql-svc
+            - name: PMA_PORT
+              value: "3306"
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass
+                  key: db_host
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass
+                  key: db_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin-svc
+  annotations:
+    metallb.universe.tf/allow-shared-ip: single-ip
+spec:
+  type: LoadBalancer
+  selector:
+    app: phpmyadmin
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
