@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: phpmyadmin-dpl
+  name: phpmyadmin
+  namespace: ft-services
   labels:
     app: phpmyadmin
 spec:
@@ -17,28 +18,40 @@ spec:
       containers:
         - name: phpmyadmin
           image: phpmyadmin:local
+          imagePullPolicy: Never
+          env:
+          - name: PMA_HOST
+            #value: localhost
+            value: mariadb.ft-services.svc.cluster.local
+          - name: PMA_PORT
+            value: "3306"
+          - name: MYSQL_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-pass
+                key: db_name
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-pass
+                key: db_password
           ports:
             - containerPort: 5000
-          env:
-            - name: PMA_HOST
-              value: mysql-svc
-            - name: PMA_PORT
-              value: "3306"
-            - name: MYSQL_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-pass
-                  key: db_host
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-pass
-                  key: db_password
+            - containerPort: 9000
+          volumeMounts:
+            - name: pma-configmap
+              mountPath: /var/www/localhost/phpmyadmin/config.inc.php
+              subPath: config.inc.php
+      volumes:
+      - name: pma-configmap
+        configMap:
+          name: pma-configmap
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: phpmyadmin-svc
+  name: phpmyadmin
+  namespace: ft-services
   annotations:
     metallb.universe.tf/allow-shared-ip: single-ip
 spec:

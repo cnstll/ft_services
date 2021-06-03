@@ -1,0 +1,15 @@
+# How to find all the files attached to a process  
+Might be useful if you are looking for log files  
+Example nginx:  
+1/Find the main process ID with `ps x | grep nginx` > 29229  
+2/List all the opened files associated with  the process with :  
+`lsof -p 29229`  
+
+# Using backquotes/backticks  ̀̀ ̀
+Everything typed between the backquotes will be evaluated by the shell before main command and the output of the execution is used by that command.
+Example:
+kill `cat /someprocess.pid`
+=> it will execute "cat" command first and input the result of the command (a pid) into the "kill" command variable. Command substitution also works with $(...)
+
+# Running a command in background with ampersand
+You can run a command in the background using "&" at the end of the command.So you won't have to wait for the command to finish in order to type in new commands

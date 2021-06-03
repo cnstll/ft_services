@@ -1,25 +1,27 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-svc
+  name: mariadb
+  namespace: ft-services
   labels:
-    app: wordpress
+    app: mariadb
   annotations:
     metallb.universe.tf/allow-shared-ip: single-ip
 spec:
   ports:
     - port: 3306
   selector:
-    app: wordpress
-    tier: mysql
+    app: mariadb
   clusterIP: None
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pv-claim
+  name: mariadb-pvc
+  namespace: ft-services
   labels:
-    app: wordpress
+    app: mariadb
+  namespace: ft-services
 spec:
   accessModes:
     - ReadWriteOnce
@@ -28,41 +30,51 @@ spec:
       storage: 15Gi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: mysql-dpl
+  name: mariadb
+  namespace: ft-services
   labels:
-    app: wordpress
+    app: mariadb
+  namespace: ft-services
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: wordpress
-      tier: mysql
-  strategy:
-    type: Recreate
+      app: mariadb
+  serviceName: mariadb
   template:
     metadata:
       labels:
-        app: wordpress
-        tier: mysql
+        app: mariadb
     spec:
+      restartPolicy: Always
       containers:
-      - image: mysql:local
-        imagePullPolicy: Never
-        name: mysql
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-pass
-              key: db_password
-        ports:
-        - containerPort: 3306
-          name: mysql
-        volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
-      volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
+        - name: mariadb
+          image: mariadb:local
+          imagePullPolicy: Never
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-pass
+                key: db_password
+          ports:
+          - containerPort: 3306
+            name: mariadb
+            protocol: TCP
+          volumeMounts:
+          - name: mariadb-pv
+            mountPath: /var/lib/mysql
+            subPath: mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mariadb-pv
+      namespace: ft-services
+      labels:
+        app: mariadb
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 4Gi

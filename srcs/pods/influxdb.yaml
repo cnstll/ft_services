@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: influxdb
+  namespace: ft-services
+  labels:
+    app: influxdb
+  namespace: ft-services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  serviceName: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: influxdb
+          image: influxdb:local
+          imagePullPolicy: Never
+          envFrom:
+            - secretRef:
+                name: influxdb-pass
+            - configMapRef:
+                name: influxdb-configmap
+          ports:
+          - containerPort: 8086
+            name: influxdb
+            protocol: TCP
+          volumeMounts:
+          - name: influxdb-pv
+            mountPath: /var/lib/influxdb
+            subPath: influxdb
+          - name: influxdb-config
+            mountPath: /etc/influxdb/influxdb.conf
+            subPath: influxdb.conf
+            readOnly: true
+      volumes:
+      - name: influxdb-config
+        configMap:
+          name: influxdb-config
+  volumeClaimTemplates:
+  - metadata:
+      name: influxdb-pv
+      namespace: ft-services
+      labels:
+        app: influxdb
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 4Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+  namespace: ft-services
+  labels:
+    app: influxdb
+#  annotations:
+#    metallb.universe.tf/allow-shared-ip: single-ip
+spec:
+  ports:
+    - port: 8086
+      protocol: TCP
+      targetPort: influxdb
+  selector:
+    app: influxdb
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-pvc
+  namespace: ft-services
+  labels:
+    app: influxdb
+  namespace: ft-services
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi

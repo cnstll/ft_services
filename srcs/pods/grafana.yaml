@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana:local
+          imagePullPolicy: Never
+          envFrom:
+          - secretRef:
+              name: influxdb-pass
+          - secretRef:
+              name: grafana-pass
+          - configMapRef:
+              name: influxdb-configmap
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/share/grafana/data
+              name: grafana-pv
+            - mountPath: /usr/share/grafana/conf/provisioning/datasources/datasources.yaml
+              name: grafana-config
+              subPath: datasources.yaml
+            - mountPath: /usr/share/grafana/conf/dashboards/providers.yaml
+              name: grafana-config
+              subPath: providers.yaml
+            - mountPath: /usr/share/grafana/dashboards/grafana_dashboard.json
+              name: grafana-dashboard
+              subPath: grafana_dashboard.json
+              readOnly: true
+      volumes:
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: grafana-config
+          configMap:
+            name: grafana-config
+        - name: grafana-dashboard
+          configMap:
+            name: grafana-dashboard-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: ft-services
+  annotations:
+    metallb.universe.tf/allow-shared-ip: single-ip
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: http-grafana
+  selector:
+    app: grafana
+  sessionAffinity: None
+  type: LoadBalancer

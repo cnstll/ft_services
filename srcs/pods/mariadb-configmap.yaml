@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: wp-mysql-configmap
 data:
-  db_host: wordpress-mysql
+  db_host: mariadb

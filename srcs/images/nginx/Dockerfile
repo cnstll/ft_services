@@ -1,14 +1,15 @@
-FROM alpine:3.12
+FROM alpine:3.13
 
-RUN apk update \
-&& apk add nginx \
-&& apk add openssl --no-cache \
+RUN rm -rf /var/cache/apk/* \
+&& rm -rf /tmp/* \
+&& apk update
+RUN apk add nginx \
+&& apk add openssl \
 && mkdir -p /var/www/localhost \
 && mkdir -p /run/nginx \
 && mkdir -p /etc/nginx/sites-available \
 && mkdir -p /etc/nginx/sites-enabled \
-&& rm -rf /etc/nginx/nginx.conf \
-&& rm -rf /etc/nginx/sites-available/default
+&& mv /etc/nginx/nginx.conf /etc/nginx/nginx2.conf
 
 COPY nginx.conf /etc/nginx/
 COPY localhost.conf /etc/nginx/sites-available/
@@ -29,7 +30,4 @@ EXPOSE 443
 
 ENTRYPOINT ["sh", "init_nginx.sh"]
 
-
-#CMD ["sh", "init_nginx.sh"]
-#CMD ["daemon off;"]
 CMD ["nginx", "-g", "daemon off;"]

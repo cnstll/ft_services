@@ -1,18 +1,15 @@
----
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: nginx-dpl
-  namespace: default
+  name: nginx
+  namespace: ft-services
   labels:
     app: nginx
 spec:
-  strategy:
-    type: Recreate
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
-  replicas: 1
   template:
     metadata:
       labels:
@@ -30,8 +27,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-svc
-  namespace: default
+  name: nginx
+  namespace: ft-services
   labels:
     app: nginx
   annotations:
