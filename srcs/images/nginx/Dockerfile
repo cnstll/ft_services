@@ -11,15 +11,12 @@ RUN apk add nginx \
 && mkdir -p /etc/nginx/sites-enabled \
 && mv /etc/nginx/nginx.conf /etc/nginx/nginx2.conf
 
-COPY nginx.conf /etc/nginx/
-COPY localhost.conf /etc/nginx/sites-available/
-#COPY proxy.conf /etc/nginx/conf.d/
-COPY self-signed.conf /etc/nginx/snippets/
-COPY ssl-params.conf /etc/nginx/snippets/
-#COPY html/wordpress-wip.html /var/www/localhost
-#COPY html/phpmyadmin-wip.html /var/www/localhost
-COPY init_nginx.sh ./
-COPY html/index.html /var/www/localhost/
+COPY srcs/nginx.conf /etc/nginx/
+COPY srcs/localhost.conf /etc/nginx/sites-available/
+COPY srcs/self-signed.conf /etc/nginx/snippets/
+COPY srcs/ssl-params.conf /etc/nginx/snippets/
+COPY srcs/init_nginx.sh ./
+COPY srcs/index.html /var/www/localhost/
 
 RUN ln -s /etc/nginx/sites-available/localhost.conf \
 /etc/nginx/sites-enabled/

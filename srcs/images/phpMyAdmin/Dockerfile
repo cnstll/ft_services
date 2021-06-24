@@ -26,17 +26,14 @@ RUN apk add wget \
 RUN chown -R nginx:nginx /var/www/ /run/nginx \
 && chmod 755 -R /var/www/
 
-COPY nginx.conf /etc/nginx
-COPY self-signed.conf /etc/nginx/snippets/
-COPY ssl-params.conf /etc/nginx/snippets/
-COPY init_pma.sh .
-COPY pma.conf /etc/nginx/sites-available/
-COPY phpinfo.php /var/www/localhost/phpmyadmin/
-#COPY index.php /var/www/localhost/phpmyadmin/
+COPY srcs/nginx.conf /etc/nginx
+COPY srcs/self-signed.conf /etc/nginx/snippets/
+COPY srcs/ssl-params.conf /etc/nginx/snippets/
+COPY srcs/init_pma.sh .
+COPY srcs/pma.conf /etc/nginx/sites-available/
 
 RUN ln -s /etc/nginx/sites-available/pma.conf /etc/nginx/sites-enabled
 
 EXPOSE 5000
 ENTRYPOINT ["/bin/sh", "init_pma.sh"]
-#CMD ["tail", "-f", "/dev/null"]
 CMD ["nginx", "-g", "daemon off;"]

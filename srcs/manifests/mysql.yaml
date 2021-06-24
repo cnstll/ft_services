@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: ft-services
+  labels:
+    app: mysql
+  annotations:
+    metallb.universe.tf/allow-shared-ip: single-ip
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: mysql
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: ft-services
+  labels:
+    app: mysql
+  namespace: ft-services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  serviceName: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: mysql
+          image: mysql:local
+          imagePullPolicy: Never
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: db_password
+          ports:
+          - containerPort: 3306
+            name: mysql
+            protocol: TCP
+          volumeMounts:
+          - name: mysql-pv
+            mountPath: /var/lib/mysql
+            subPath: mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-pv
+      namespace: ft-services
+      labels:
+        app: mysql
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 4Gi

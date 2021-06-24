@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  namespace: ft-services
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      containers:
+        - name: phpmyadmin
+          image: phpmyadmin:local
+          imagePullPolicy: Never
+          env:
+          - name: PMA_HOST
+            #value: localhost
+            value: mysql-0.mysql.ft-services.svc.cluster.local
+          - name: PMA_PORT
+            value: "3306"
+          - name: MYSQL_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: db_name
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: db_password
+          ports:
+            - containerPort: 5000
+            - containerPort: 9000
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 1
+            exec:
+              command:
+                - pgrep
+                - "php-fpm: master"
+          volumeMounts:
+            - name: pma-configmap
+              mountPath: /var/www/localhost/phpmyadmin/config.inc.php
+              subPath: config.inc.php
+      volumes:
+      - name: pma-configmap
+        configMap:
+          name: pma-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin
+  namespace: ft-services
+  annotations:
+    metallb.universe.tf/allow-shared-ip: single-ip
+spec:
+  type: LoadBalancer
+  selector:
+    app: phpmyadmin
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000

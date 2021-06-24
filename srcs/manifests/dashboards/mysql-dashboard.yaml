@@ -1,0 +1,571 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-dashboard
+  namespace: ft-services
+  labels:
+    app: mysql
+data:
+  mysqlDashboard.json: |
+     {
+       "annotations": {
+         "list": [
+           {
+             "builtIn": 1,
+             "datasource": "-- Grafana --",
+             "enable": true,
+             "hide": true,
+             "iconColor": "rgba(0, 211, 255, 1)",
+             "name": "Annotations & Alerts",
+             "type": "dashboard"
+           }
+         ]
+       },
+       "editable": true,
+       "gnetId": null,
+       "graphTooltip": 0,
+       "id": 1,
+       "links": [],
+       "panels": [
+         {
+           "datasource": "influxdb",
+           "fieldConfig": {
+             "defaults": {
+               "custom": {
+                 "align": null,
+                 "filterable": false
+               },
+               "mappings": [],
+               "thresholds": {
+                 "mode": "absolute",
+                 "steps": [
+                   {
+                     "color": "green",
+                     "value": null
+                   },
+                   {
+                     "color": "red",
+                     "value": 80
+                   }
+                 ]
+               }
+             },
+             "overrides": []
+           },
+           "gridPos": {
+             "h": 3,
+             "w": 3,
+             "x": 0,
+             "y": 0
+           },
+           "id": 5,
+           "options": {
+             "colorMode": "value",
+             "graphMode": "area",
+             "justifyMode": "center",
+             "orientation": "auto",
+             "reduceOptions": {
+               "calcs": [
+                 "mean"
+               ],
+               "fields": "",
+               "limit": 1,
+               "values": true
+             },
+             "textMode": "auto"
+           },
+           "pluginVersion": "7.3.6",
+           "targets": [
+             {
+               "groupBy": [],
+               "measurement": "docker_container_status",
+               "orderByTime": "ASC",
+               "policy": "default",
+               "query": "SELECT \"container_id\" FROM \"docker_container_status\" WHERE (\"io.kubernetes.pod.name\" = 'mysql') AND $timeFilter",
+               "queryType": "randomWalk",
+               "rawQuery": false,
+               "refId": "A",
+               "resultFormat": "table",
+               "select": [
+                 [
+                   {
+                     "params": [
+                       "pid"
+                     ],
+                     "type": "field"
+                   }
+                 ]
+               ],
+               "tags": [
+                 {
+                   "key": "io.kubernetes.container.name",
+                   "operator": "=",
+                   "value": "mysql"
+                 }
+               ]
+             }
+           ],
+           "timeFrom": null,
+           "timeShift": null,
+           "title": "PID",
+           "type": "stat"
+         },
+         {
+           "datasource": "influxdb",
+           "fieldConfig": {
+             "defaults": {
+               "custom": {
+                 "align": null,
+                 "filterable": false
+               },
+               "mappings": [],
+               "thresholds": {
+                 "mode": "absolute",
+                 "steps": [
+                   {
+                     "color": "green",
+                     "value": null
+                   },
+                   {
+                     "color": "red",
+                     "value": 80
+                   }
+                 ]
+               }
+             },
+             "overrides": []
+           },
+           "gridPos": {
+             "h": 3,
+             "w": 3,
+             "x": 3,
+             "y": 0
+           },
+           "id": 7,
+           "options": {
+             "colorMode": "value",
+             "graphMode": "area",
+             "justifyMode": "center",
+             "orientation": "auto",
+             "reduceOptions": {
+               "calcs": [
+                 "mean"
+               ],
+               "fields": "/^Time$/",
+               "limit": 1,
+               "values": true
+             },
+             "textMode": "auto"
+           },
+           "pluginVersion": "7.3.6",
+           "targets": [
+             {
+               "groupBy": [],
+               "measurement": "docker_container_status",
+               "orderByTime": "ASC",
+               "policy": "default",
+               "query": "SELECT \"container_id\" FROM \"docker_container_status\" WHERE (\"io.kubernetes.pod.name\" = 'mysql') AND $timeFilter",
+               "queryType": "randomWalk",
+               "rawQuery": false,
+               "refId": "A",
+               "resultFormat": "table",
+               "select": [
+                 [
+                   {
+                     "params": [
+                       "started_at"
+                     ],
+                     "type": "field"
+                   }
+                 ]
+               ],
+               "tags": [
+                 {
+                   "key": "io.kubernetes.container.name",
+                   "operator": "=",
+                   "value": "mysql"
+                 }
+               ]
+             }
+           ],
+           "timeFrom": null,
+           "timeShift": null,
+           "title": "Container Start Time",
+           "type": "stat"
+         },
+         {
+           "datasource": "influxdb",
+           "fieldConfig": {
+             "defaults": {
+               "custom": {
+                 "align": null,
+                 "filterable": false
+               },
+               "mappings": [],
+               "thresholds": {
+                 "mode": "absolute",
+                 "steps": [
+                   {
+                     "color": "green",
+                     "value": null
+                   },
+                   {
+                     "color": "red",
+                     "value": 80
+                   }
+                 ]
+               }
+             },
+             "overrides": []
+           },
+           "gridPos": {
+             "h": 3,
+             "w": 6,
+             "x": 6,
+             "y": 0
+           },
+           "id": 2,
+           "options": {
+             "displayMode": "gradient",
+             "orientation": "auto",
+             "reduceOptions": {
+               "calcs": [
+                 "mean"
+               ],
+               "fields": "",
+               "values": false
+             },
+             "showUnfilled": true
+           },
+           "pluginVersion": "7.3.6",
+           "targets": [
+             {
+               "groupBy": [
+                 {
+                   "params": [
+                     "container_name"
+                   ],
+                   "type": "tag"
+                 }
+               ],
+               "measurement": "kubernetes_pod_container",
+               "orderByTime": "ASC",
+               "policy": "default",
+               "query": "SELECT \"restarts_total\" FROM \"kubernetes_pod_container\" WHERE $timeFilter",
+               "queryType": "randomWalk",
+               "rawQuery": false,
+               "refId": "A",
+               "resultFormat": "table",
+               "select": [
+                 [
+                   {
+                     "params": [
+                       "restarts_total"
+                     ],
+                     "type": "field"
+                   }
+                 ],
+                 [
+                   {
+                     "params": [
+                       "state_code"
+                     ],
+                     "type": "field"
+                   }
+                 ]
+               ],
+               "tags": [
+                 {
+                   "key": "container_name",
+                   "operator": "=",
+                   "value": "mysql"
+                 }
+               ]
+             }
+           ],
+           "timeFrom": null,
+           "timeShift": null,
+           "title": "Number of restarts And state Code",
+           "type": "bargauge"
+         },
+         {
+           "aliasColors": {},
+           "bars": false,
+           "dashLength": 10,
+           "dashes": false,
+           "datasource": "influxdb",
+           "fieldConfig": {
+             "defaults": {
+               "custom": {
+                 "align": null,
+                 "filterable": false
+               },
+               "mappings": [],
+               "thresholds": {
+                 "mode": "absolute",
+                 "steps": [
+                   {
+                     "color": "green",
+                     "value": null
+                   },
+                   {
+                     "color": "red",
+                     "value": 80
+                   }
+                 ]
+               }
+             },
+             "overrides": []
+           },
+           "fill": 1,
+           "fillGradient": 0,
+           "gridPos": {
+             "h": 8,
+             "w": 12,
+             "x": 0,
+             "y": 3
+           },
+           "hiddenSeries": false,
+           "id": 4,
+           "legend": {
+             "avg": false,
+             "current": false,
+             "max": false,
+             "min": false,
+             "show": true,
+             "total": false,
+             "values": false
+           },
+           "lines": true,
+           "linewidth": 1,
+           "nullPointMode": "null",
+           "options": {
+             "alertThreshold": true
+           },
+           "percentage": false,
+           "pluginVersion": "7.3.6",
+           "pointradius": 2,
+           "points": false,
+           "renderer": "flot",
+           "seriesOverrides": [],
+           "spaceLength": 10,
+           "stack": false,
+           "steppedLine": false,
+           "targets": [
+             {
+               "groupBy": [],
+               "measurement": "docker_container_cpu",
+               "orderByTime": "ASC",
+               "policy": "default",
+               "queryType": "randomWalk",
+               "refId": "A",
+               "resultFormat": "table",
+               "select": [
+                 [
+                   {
+                     "params": [
+                       "usage_percent"
+                     ],
+                     "type": "field"
+                   }
+                 ]
+               ],
+               "tags": [
+                 {
+                   "key": "io.kubernetes.container.name",
+                   "operator": "=",
+                   "value": "mysql"
+                 }
+               ]
+             }
+           ],
+           "thresholds": [],
+           "timeFrom": null,
+           "timeRegions": [],
+           "timeShift": null,
+           "title": "% CPU USAGE",
+           "tooltip": {
+             "shared": true,
+             "sort": 0,
+             "value_type": "individual"
+           },
+           "type": "graph",
+           "xaxis": {
+             "buckets": null,
+             "mode": "time",
+             "name": null,
+             "show": true,
+             "values": []
+           },
+           "yaxes": [
+             {
+               "format": "short",
+               "label": null,
+               "logBase": 1,
+               "max": null,
+               "min": null,
+               "show": true
+             },
+             {
+               "format": "short",
+               "label": null,
+               "logBase": 1,
+               "max": null,
+               "min": null,
+               "show": true
+             }
+           ],
+           "yaxis": {
+             "align": false,
+             "alignLevel": null
+           }
+         },
+         {
+           "aliasColors": {},
+           "bars": false,
+           "dashLength": 10,
+           "dashes": false,
+           "datasource": "influxdb",
+           "fieldConfig": {
+             "defaults": {
+               "custom": {
+                 "align": null,
+                 "filterable": false
+               },
+               "mappings": [],
+               "thresholds": {
+                 "mode": "absolute",
+                 "steps": [
+                   {
+                     "color": "green",
+                     "value": null
+                   },
+                   {
+                     "color": "red",
+                     "value": 80
+                   }
+                 ]
+               }
+             },
+             "overrides": []
+           },
+           "fill": 1,
+           "fillGradient": 0,
+           "gridPos": {
+             "h": 8,
+             "w": 12,
+             "x": 0,
+             "y": 11
+           },
+           "hiddenSeries": false,
+           "id": 6,
+           "legend": {
+             "avg": false,
+             "current": false,
+             "max": false,
+             "min": false,
+             "show": true,
+             "total": false,
+             "values": false
+           },
+           "lines": true,
+           "linewidth": 1,
+           "nullPointMode": "null",
+           "options": {
+             "alertThreshold": true
+           },
+           "percentage": false,
+           "pluginVersion": "7.3.6",
+           "pointradius": 2,
+           "points": false,
+           "renderer": "flot",
+           "seriesOverrides": [],
+           "spaceLength": 10,
+           "stack": false,
+           "steppedLine": false,
+           "targets": [
+             {
+               "groupBy": [],
+               "measurement": "docker_container_mem",
+               "orderByTime": "ASC",
+               "policy": "default",
+               "queryType": "randomWalk",
+               "refId": "A",
+               "resultFormat": "table",
+               "select": [
+                 [
+                   {
+                     "params": [
+                       "usage_percent"
+                     ],
+                     "type": "field"
+                   }
+                 ]
+               ],
+               "tags": [
+                 {
+                   "key": "io.kubernetes.container.name",
+                   "operator": "=",
+                   "value": "mysql"
+                 }
+               ]
+             }
+           ],
+           "thresholds": [],
+           "timeFrom": null,
+           "timeRegions": [],
+           "timeShift": null,
+           "title": "% MEMORY USAGE",
+           "tooltip": {
+             "shared": true,
+             "sort": 0,
+             "value_type": "individual"
+           },
+           "type": "graph",
+           "xaxis": {
+             "buckets": null,
+             "mode": "time",
+             "name": null,
+             "show": true,
+             "values": []
+           },
+           "yaxes": [
+             {
+               "format": "short",
+               "label": null,
+               "logBase": 1,
+               "max": null,
+               "min": null,
+               "show": true
+             },
+             {
+               "format": "short",
+               "label": null,
+               "logBase": 1,
+               "max": null,
+               "min": null,
+               "show": true
+             }
+           ],
+           "yaxis": {
+             "align": false,
+             "alignLevel": null
+           }
+         }
+       ],
+       "schemaVersion": 26,
+       "style": "dark",
+       "tags": [],
+       "templating": {
+         "list": []
+       },
+       "time": {
+         "from": "now-5m",
+         "to": "now"
+       },
+       "timepicker": {},
+       "timezone": "",
+       "title": "Mysql",
+       "uid": "9MCnG9Rnk",
+       "version": 13
+     }

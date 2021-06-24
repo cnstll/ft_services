@@ -6,10 +6,10 @@ RUN apk update \
 && apk add vim --no-cache \
 && mkdir -p /var/lib/mysql
 
-COPY init_db.sh .
-COPY mariadb-server.cnf /etc/my.cnf.d/
+COPY srcs/init_db.sh .
+COPY srcs/mariadb-server.cnf /etc/my.cnf.d/
 
 EXPOSE 3306
 
 ENTRYPOINT ["sh", "init_db.sh"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["/usr/bin/mysqld", "--user=root"]

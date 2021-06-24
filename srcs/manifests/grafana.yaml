@@ -1,0 +1,134 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  namespace: ft-services
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+    namespace: ft-services
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana:local
+          imagePullPolicy: Never
+          envFrom:
+          - secretRef:
+              name: influxdb-pass
+          - secretRef:
+              name: grafana-pass
+          - configMapRef:
+              name: influxdb-configmap
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/share/grafana/data
+              name: grafana-pv
+            - mountPath: /usr/share/grafana/conf/provisioning/datasources/datasources.yaml
+              name: grafana-config
+              subPath: datasources.yaml
+              # Mounting Dashboard Source
+            - mountPath: /usr/share/grafana/conf/provisioning/dashboards/providers.yaml
+              name: grafana-config
+              subPath: providers.yaml
+              # Mounting Dashboard Config for each service
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/wordpressDashboard.json
+              name: wordpress-dashboard
+              subPath: wordpressDashboard.json
+              readOnly: true
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/nginxDashboard.json
+              name: nginx-dashboard
+              subPath: nginxDashboard.json
+              readOnly: true
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/phpmyadminDashboard.json
+              name: phpmyadmin-dashboard
+              subPath: phpmyadminDashboard.json
+              readOnly: true
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/mysqlDashboard.json
+              name: mysql-dashboard
+              subPath: mysqlDashboard.json
+              readOnly: true
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/ftpsDashboard.json
+              name: ftps-dashboard
+              subPath: ftpsDashboard.json
+              readOnly: true
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/grafanaDashboard.json
+              name: grafana-dashboard
+              subPath: grafanaDashboard.json
+              readOnly: true
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/influxdbDashboard.json
+              name: influxdb-dashboard
+              subPath: influxdbDashboard.json
+              readOnly: true
+            - mountPath: /usr/share/grafana/public/dashboards/ft-services/telegrafDashboard.json
+              name: telegraf-dashboard
+              subPath: telegrafDashboard.json
+              readOnly: true
+      volumes:
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: grafana-config
+          configMap:
+            name: grafana-config
+        - name: wordpress-dashboard
+          configMap:
+            name: wordpress-dashboard
+        - name: nginx-dashboard
+          configMap:
+            name: nginx-dashboard
+        - name: phpmyadmin-dashboard
+          configMap:
+            name: phpmyadmin-dashboard
+        - name: mysql-dashboard
+          configMap:
+            name: mysql-dashboard
+        - name: ftps-dashboard
+          configMap:
+            name: ftps-dashboard
+        - name: influxdb-dashboard
+          configMap:
+            name: influxdb-dashboard
+        - name: grafana-dashboard
+          configMap:
+            name: grafana-dashboard
+        - name: telegraf-dashboard
+          configMap:
+            name: telegraf-dashboard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: ft-services
+  annotations:
+    metallb.universe.tf/allow-shared-ip: single-ip
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: http-grafana
+  selector:
+    app: grafana
+  type: LoadBalancer
