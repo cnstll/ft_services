@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Download and install kubectl Kubernetes CLI
-EXPECTED_KUBECTL_VERSION="v1.21.0"
-CURRENT_KUBECTL_VERSION=$(kubectl version)
+EXPECTED_KUBECTL_VERSION="v1.20.0"
+CURRENT_KUBECTL_VERSION=$(kubectl version | awk '/Server Version/')
 
 if [[ $CURRENT_MINIKUBE_VERSION =~ $EXPECTED_MINIKUBE_VERSION ]]
 then

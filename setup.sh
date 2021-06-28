@@ -33,7 +33,7 @@ minikube delete
 ## Starting minikube env
 echo ""
 echo "⏳ Starting a new instance of minikube..."
-minikube start --driver=docker --namespace ft-services
+minikube start --driver=docker
 
 ## Download and Install kubectl, if necessary
 echo ""
