@@ -1,19 +1,15 @@
 #!/bin/bash
 
-minikube
-if [[ $? -ne 0 ]]
-# Download and install Minikube
-then
-	curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-	sudo install minikube-linux-amd64 /usr/local/bin/minikube
+EXPECTED_MINIKUBE_VERSION="v1.21.0"
+CURRENT_MINIKUBE_VERSION=$(minikube version | grep version | sed 's/minikube version: //g')
+
+if [[ $(minikube version) =~ $EXPECTED_MINIKUBE_VERSION ]]
+	then
+		echo ">>>> Minikube already installed"
+else
+	echo ">>>> Downloading and Installing Minikube"
+	curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/$arch/kubectl
+	chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 fi
 
-# Ensure minikube env is new
-minikube delete
-
-# Starting minikube env
-minikube start --driver=docker --namespace ft-services
-
-# Allowing addons
-minikube addons enable dashboard
-minikube addons enable metallb
+exit 0

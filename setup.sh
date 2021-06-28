@@ -14,7 +14,8 @@ elif [[ $(uname -m) = arm64 ]]
 	then
 		arch=arm64
 else
-		arch=$(uname -m)
+	echo "Architecture $(uname -m) not supported :/"
+	exit 1
 fi
 echo ">>>> Architecture Detected $arch"
 export arch
@@ -22,7 +23,7 @@ export arch
 ## Download and Install minikube, if necessary
 echo ""
 echo "⏳ Minikube setup..."
-bash setup_minikube.sh
+bash srcs/setup_minikube.sh
 
 ## Ensure minikube env is new
 echo ""
@@ -37,13 +38,14 @@ minikube start --driver=docker --namespace ft-services
 ## Download and Install kubectl, if necessary
 echo ""
 echo "⏳ Kubectl setup..."
-bash setup_kubectl.sh
+bash srcs/setup_kubectl.sh
 
 ## Allowing addons
 echo ""
 echo "⏳ Addons setup..."
-minikube addons enable dashboard
-minikube addons enable metallb
+minikube addons enable dashboard &> /dev/null
+minikube addons enable metallb &> /dev/null
+minikube addons enable metrics-server &> /dev/null
 
 ## Connet minikube image registery to local docker registry
 eval $(minikube -p minikube docker-env)
@@ -92,7 +94,7 @@ echo "⚡ -- Metallb configured and running -- ⚡"
 kubectl apply -f srcs/manifests/secret.yaml
 kubectl apply -f srcs/manifests/mysql-configmap.yaml
 kubectl apply -f srcs/manifests/phpmyadmin-configmap.yaml
-Kubectl apply -f srcs/manifests/influxdb-configmap.yaml
+kubectl apply -f srcs/manifests/influxdb-configmap.yaml
 kubectl apply -f srcs/manifests/telegraf-configmap.yaml
 kubectl apply -f srcs/manifests/telegraf-auth.yaml
 kubectl apply -f srcs/manifests/grafana-config.yaml
