@@ -4,7 +4,7 @@
 EXPECTED_KUBECTL_VERSION="v1.20.0"
 CURRENT_KUBECTL_VERSION=$(kubectl version | awk '/Server Version/')
 
-if [[ $CURRENT_MINIKUBE_VERSION =~ $EXPECTED_MINIKUBE_VERSION ]]
+if [[ $CURRENT_MINIKUBE_VERSION =~ $EXPECTED_MINIKUBE_VERSION ]] && [[ $? -eq 0 ]]
 then
 	echo ">>>> Kubectl already installed"
 else
