@@ -23,7 +23,7 @@ export arch
 ## Download and Install minikube, if necessary
 echo ""
 echo "⏳ Minikube setup..."
-bash srcs/setup_minikube.sh
+bash srcs/setup_minikube.sh 2>> error.log
 
 ## Ensure minikube env is new
 echo ""
@@ -38,7 +38,7 @@ minikube start --driver=docker
 ## Download and Install kubectl, if necessary
 echo ""
 echo "⏳ Kubectl setup..."
-bash srcs/setup_kubectl.sh
+bash srcs/setup_kubectl.sh 2>> error.log
 
 ## Allowing addons
 echo ""
