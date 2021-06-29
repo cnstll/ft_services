@@ -65,12 +65,14 @@ echo "🙌 Addons enabled"
 ## Connet minikube image registery to local docker registry
 eval $(minikube -p minikube docker-env)
 sleep 5
-echo "⚡ -- Minikube cluster up and running -- ⚡"
+echo ""
+echo "⚡⚡ Minikube cluster up and running"
 
 ## Building docker images of our apps
 echo ""
 echo "⏳ Building docker local images..."
 echo "☕🍵 You may have some time to grab a coffee/tea..."
+echo ""
 echo -ne '[ ░░░░░░░░░░░░░░░░ ](0/8)\r'
 docker build -t nginx:local srcs/images/nginx &> /dev/null
 echo -ne '[ ▓▓░░░░░░░░░░░░░░ ](1/8)\r'
@@ -91,7 +93,7 @@ echo -ne '[ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ](8/8)\r'
 echo -e '\e[92m[ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ](8/8)\r\e[0m'
 sleep 1
 echo ""
-echo "⚡ -- Docker Images ready -- ⚡"
+echo "⚡⚡ Docker Images ready"
 
 # Creating a namespace for services
 kubectl create namespace ft-services &> /dev/null
@@ -103,7 +105,8 @@ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manife
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/metallb.yaml &> /dev/null
 kubectl apply -f ./srcs/manifests/metallb-configmap.yaml &> /dev/null
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" &> /dev/null
-echo "⚡ -- Metallb configured and running -- ⚡"
+echo ""
+echo "⚡⚡ Metallb configured and running"
 
 ## Apps pre-requisite (Secrets, configmaps..)
 kubectl apply -f srcs/manifests/secret.yaml &> /dev/null
@@ -124,7 +127,8 @@ kubectl apply -f srcs/manifests/dashboards/grafana-dashboard.yaml &> /dev/null
 kubectl apply -f srcs/manifests/dashboards/influxdb-dashboard.yaml &> /dev/null
 kubectl apply -f srcs/manifests/dashboards/ftps-dashboard.yaml &> /dev/null
 
-echo "⚡ -- Secrets and Configfile loaded -- ⚡"
+echo ""
+echo "⚡⚡ Secrets and Configfile loaded"
 
 ## Deploying the different apps in the cluster
 kubectl apply -f srcs/manifests/mysql.yaml &> /dev/null
@@ -135,7 +139,10 @@ kubectl apply -f srcs/manifests/grafana.yaml &> /dev/null
 kubectl apply -f srcs/manifests/ftps.yaml &> /dev/null
 kubectl apply -f srcs/manifests/wordpress.yaml &> /dev/null
 kubectl apply -f srcs/manifests/telegraf.yaml &> /dev/null
-echo "⚡ -- Pods configured and running -- ⚡"
+echo ""
+echo "⚡⚡ Pods configured and running"
 
-echo "Do 'minikube dashboard' to open cluster dashboard"
-echo "⚡⚡-- Connect to Cluster through IP: http://192.168.49.2/ -- ⚡⚡"
+echo "----------------------------------------------------------------"
+echo "| ⌨️   Do 'minikube dashboard' to open cluster dashboard        |"
+echo "|⚡⚡ Connect to Cluster through IP: http://192.168.49.2/ ⚡⚡ |"
+echo "----------------------------------------------------------------"
