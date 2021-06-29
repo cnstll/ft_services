@@ -1,0 +1,8 @@
+FTPS (File Transfer Protocol Secure) builds from the well known FTP and is designed to secure file exchange on a network. A FTPS server is secured using SSL and TLS.
+
+There are 2 encryption modes that a ftps can be used in:
+> Explicit: Clients connect through port 21 and ask the server to encrypt the connexion with TLS (AUTH TLS) and to encrypt the data through SSL (AUTH SSL). The uri used is ftpes:// or ftp://
+> Implicit: Clients connect through the port 990 and data flows through port 989.
+The uri used is ftps://.
+Implicit FTPS is the former method used to encrypt FTP data and is less and less used nowdays.
+Though, implicit encryption is known to be more strict as it requires a SSL connection through port 990. Then, if the client fails to comply with the security request, the server drops the connection.

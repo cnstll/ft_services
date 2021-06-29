@@ -13,7 +13,9 @@ spec:
     app: wordpress
     tier: frontend
   ports:
-  - port: 5050 targetPort: 5050 protocol: TCP
+  - port: 5050
+    targetPort: 5050
+    protocol: TCP
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -73,7 +75,7 @@ spec:
         - containerPort: 5050
           name: wordpress
         livenessProbe:
-          initialDelaySeconds: 120
+          initialDelaySeconds: 90
           periodSeconds: 10
           timeoutSeconds: 5
           successThreshold: 1

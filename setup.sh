@@ -4,6 +4,17 @@
 
 set -e
 
+## Checking OS
+echo ""
+echo "🔎 Checking Operating System..."
+if [[ $(uname) = Linux ]]
+	then
+		echo "⚙️  OS Detected $(uname)"
+else
+		echo "💫  $(uname) is not a supported OS"
+	exit 1
+fi
+
 ## Checking Architecture for minikube and kubectl download
 echo ""
 echo "🔎 Checking architecture..."

@@ -1,0 +1,22 @@
+### kubectl commands
+`kubectl get all`
+
+`kubectl get nodes`
+
+`kubectl get pod`
+
+`kubectl get services`
+
+`kubectl get deployment`
+
+`kubectl get replicaset`
+
+### debugging
+`kubectl logs {pod-name}`
+
+`kubectl describe [{pod-name}, {deployment-name}, {service-name},..}`
+
+`kubectl exec -it {pod-name} -- bin/bash`
+
+### delete pod
+`kubectl delete pod/{pod-name}`
