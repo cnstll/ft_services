@@ -116,14 +116,14 @@ kubectl apply -f srcs/manifests/dashboards/ftps-dashboard.yaml &> /dev/null
 echo "⚡ -- Secrets and Configfile loaded -- ⚡"
 
 ## Deploying the different apps in the cluster
-kubectl apply -f srcs/manifests/nginx.yaml &> /dev/null
 kubectl apply -f srcs/manifests/mysql.yaml &> /dev/null
+kubectl apply -f srcs/manifests/nginx.yaml &> /dev/null
 kubectl apply -f srcs/manifests/influxdb.yaml &> /dev/null
 kubectl apply -f srcs/manifests/phpmyadmin.yaml &> /dev/null
-kubectl apply -f srcs/manifests/wordpress.yaml &> /dev/null
-kubectl apply -f srcs/manifests/telegraf.yaml &> /dev/null
 kubectl apply -f srcs/manifests/grafana.yaml &> /dev/null
 kubectl apply -f srcs/manifests/ftps.yaml &> /dev/null
+kubectl apply -f srcs/manifests/wordpress.yaml &> /dev/null
+kubectl apply -f srcs/manifests/telegraf.yaml &> /dev/null
 echo "⚡ -- Pods configured and running -- ⚡"
 
 echo "Do 'minikube dashboard' to open cluster dashboard"
