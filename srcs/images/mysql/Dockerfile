@@ -2,8 +2,6 @@ FROM alpine:3.13
 
 RUN apk update \
 && apk add mariadb mariadb-client \
-&& apk add openrc \
-&& apk add vim --no-cache \
 && mkdir -p /var/lib/mysql
 
 COPY srcs/init_db.sh .

@@ -17,7 +17,7 @@ else
 	echo "💫 Architecture $(uname -m) not supported"
 	exit 1
 fi
-echo "🚚 Architecture Detected $arch"
+echo "⚙️  Architecture Detected $arch"
 export arch
 
 ## Download and Install minikube, if necessary
@@ -41,7 +41,7 @@ echo "⏳ Kubectl setup..."
 bash srcs/setup_kubectl.sh 2>> error.log
 
 ## Set ft-services as the default namespace for all kubectl cmds
-kubectl config set-context --current --namespace=ft-services
+kubectl config set-context --current --namespace=ft-services &> /dev/null
 
 ## Allowing addons
 echo ""
@@ -83,48 +83,47 @@ echo ""
 echo "⚡ -- Docker Images ready -- ⚡"
 
 # Creating a namespace for services
-kubectl create namespace ft-services
-
+kubectl create namespace ft-services &> /dev/null
 
 ## Install MetalLB in the cluster
 echo ""
 echo "⏳ Applying Kubernetes manifests..."
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/namespace.yaml &> setup.log
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/metallb.yaml &> setup.log
-kubectl apply -f ./srcs/manifests/metallb-configmap.yaml &> setup.log
-kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" &> setup.log
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/namespace.yaml &> /dev/null
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/metallb.yaml &> /dev/null
+kubectl apply -f ./srcs/manifests/metallb-configmap.yaml &> /dev/null
+kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" &> /dev/null
 echo "⚡ -- Metallb configured and running -- ⚡"
 
 ## Apps pre-requisite (Secrets, configmaps..)
-kubectl apply -f srcs/manifests/secret.yaml &> setup.log
-kubectl apply -f srcs/manifests/mysql-configmap.yaml &> setup.log
-kubectl apply -f srcs/manifests/phpmyadmin-configmap.yaml &> setup.log
-kubectl apply -f srcs/manifests/influxdb-configmap.yaml &> setup.log
-kubectl apply -f srcs/manifests/telegraf-configmap.yaml &> setup.log
-kubectl apply -f srcs/manifests/telegraf-auth.yaml &> setup.log
-kubectl apply -f srcs/manifests/grafana-config.yaml &> setup.log
+kubectl apply -f srcs/manifests/secret.yaml &> /dev/null
+kubectl apply -f srcs/manifests/mysql-configmap.yaml &> /dev/null
+kubectl apply -f srcs/manifests/phpmyadmin-configmap.yaml &> /dev/null
+kubectl apply -f srcs/manifests/influxdb-configmap.yaml &> /dev/null
+kubectl apply -f srcs/manifests/telegraf-configmap.yaml &> /dev/null
+kubectl apply -f srcs/manifests/telegraf-auth.yaml &> /dev/null
+kubectl apply -f srcs/manifests/grafana-config.yaml &> /dev/null
 
 ## Json files for each app dashboard to be imported in grafana
-kubectl apply -f srcs/manifests/dashboards/wordpress-dashboard.yaml &> setup.log
-kubectl apply -f srcs/manifests/dashboards/nginx-dashboard.yaml &> setup.log
-kubectl apply -f srcs/manifests/dashboards/phpmyadmin-dashboard.yaml &> setup.log
-kubectl apply -f srcs/manifests/dashboards/mysql-dashboard.yaml &> setup.log
-kubectl apply -f srcs/manifests/dashboards/telegraf-dashboard.yaml &> setup.log
-kubectl apply -f srcs/manifests/dashboards/grafana-dashboard.yaml &> setup.log
-kubectl apply -f srcs/manifests/dashboards/influxdb-dashboard.yaml &> setup.log
-kubectl apply -f srcs/manifests/dashboards/ftps-dashboard.yaml &> setup.log
+kubectl apply -f srcs/manifests/dashboards/wordpress-dashboard.yaml &> /dev/null
+kubectl apply -f srcs/manifests/dashboards/nginx-dashboard.yaml &> /dev/null
+kubectl apply -f srcs/manifests/dashboards/phpmyadmin-dashboard.yaml &> /dev/null
+kubectl apply -f srcs/manifests/dashboards/mysql-dashboard.yaml &> /dev/null
+kubectl apply -f srcs/manifests/dashboards/telegraf-dashboard.yaml &> /dev/null
+kubectl apply -f srcs/manifests/dashboards/grafana-dashboard.yaml &> /dev/null
+kubectl apply -f srcs/manifests/dashboards/influxdb-dashboard.yaml &> /dev/null
+kubectl apply -f srcs/manifests/dashboards/ftps-dashboard.yaml &> /dev/null
 
 echo "⚡ -- Secrets and Configfile loaded -- ⚡"
 
 ## Deploying the different apps in the cluster
-kubectl apply -f srcs/manifests/nginx.yaml &> setup.log
-kubectl apply -f srcs/manifests/mysql.yaml &> setup.log
-kubectl apply -f srcs/manifests/wordpress.yaml &> setup.log
-kubectl apply -f srcs/manifests/phpmyadmin.yaml &> setup.log
-kubectl apply -f srcs/manifests/influxdb.yaml &> setup.log
-kubectl apply -f srcs/manifests/telegraf.yaml &> setup.log
-kubectl apply -f srcs/manifests/grafana.yaml &> setup.log
-kubectl apply -f srcs/manifests/ftps.yaml &> setup.log
+kubectl apply -f srcs/manifests/nginx.yaml &> /dev/null
+kubectl apply -f srcs/manifests/mysql.yaml &> /dev/null
+kubectl apply -f srcs/manifests/influxdb.yaml &> /dev/null
+kubectl apply -f srcs/manifests/phpmyadmin.yaml &> /dev/null
+kubectl apply -f srcs/manifests/wordpress.yaml &> /dev/null
+kubectl apply -f srcs/manifests/telegraf.yaml &> /dev/null
+kubectl apply -f srcs/manifests/grafana.yaml &> /dev/null
+kubectl apply -f srcs/manifests/ftps.yaml &> /dev/null
 echo "⚡ -- Pods configured and running -- ⚡"
 
 echo "Do 'minikube dashboard' to open cluster dashboard"

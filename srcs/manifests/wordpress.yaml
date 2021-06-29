@@ -58,7 +58,7 @@ spec:
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
-          value: mysql.ft-services.svc.cluster.local
+          value: mysql-0.mysql.ft-services.svc.cluster.local
         - name: WORDPRESS_DB_NAME
           valueFrom:
             secretKeyRef:
@@ -75,7 +75,7 @@ spec:
         - containerPort: 5050
           name: wordpress
         livenessProbe:
-          initialDelaySeconds: 10
+          initialDelaySeconds: 90
           periodSeconds: 10
           timeoutSeconds: 5
           successThreshold: 1

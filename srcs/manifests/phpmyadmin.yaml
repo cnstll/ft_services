@@ -39,7 +39,7 @@ spec:
             - containerPort: 5000
             - containerPort: 9000
           livenessProbe:
-            initialDelaySeconds: 10
+            initialDelaySeconds: 90
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
